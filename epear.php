@@ -53,15 +53,6 @@ $fullfilelist = $pf->getFileList();
 
 $rmfiles = array_diff_key($fullfilelist, $filelist);
 
-$ins = "";
-
-
-foreach($filelist as $filename => $file) {
-	if ($file["attribs"]["role"] == "script") {
-		$ins .= "newbin " . $filename . " " . $file["attribs"]["install-as"] ."\n";
-	}
-}
-
 
 $phpflags = array();
 $php53flags = array();
@@ -99,7 +90,12 @@ if ($phpflags != $php53flags) {
 
 $peardep = implode("\n", $pearDeps);
 
-$ns = substr($pf->getName(), 0, strpos($pf->getName(), "_"));
+$doins = "";
+
+foreach ($filelist as $filename => $file) {
+	
+}
+
 
 $prefix = ($channelUri == "pear.php.net") ? $prefix = "PEAR-" : "";
 
@@ -112,6 +108,7 @@ $ebuildname = "overlay/dev-php/" . $prefix . $pf->getName() . "/" . $prefix . $p
 $ebuild = `head -n4 /usr/portage/skel.ebuild`;
 
 $ebuild .= "EAPI=\"2\"\n";
+$ebuild .= "inherit php-pear-r1\n";
 $ebuild .= "KEYWORDS=\"~amd64\"\n";
 $ebuild .= "SLOT=\"0\"\n";
 $ebuild .= "DESCRIPTION=\"" . $pf->getSummary() . "\"\n";
@@ -121,17 +118,6 @@ $ebuild .= "SRC_URI=\"" . $uri . "\"\n";
 $ebuild .= "DEPEND=\"" . $phpdep . "\n" . $peardep . "\"\n";
 $ebuild .= "RDEPEND=\"\${DEPEND}\"\n";
 $ebuild .= "\n";
-$ebuild .= <<<BASH
-src_install() {
-		for file in `grep -lr "@php_bin@" .`; do sed s:@php_bin@:/usr/bin/php:g -i \$file; done
-		for file in `grep -lr "@bin_dir@" .`; do sed s:@bin_dir@:/usr/bin/:g -i \$file; done
-		insinto /usr/share/php
-		doins -r $ns || die "doins failed"
-
-		$ins 
-}
-
-BASH;
 
 file_put_contents($ebuildname, $ebuild);
 
