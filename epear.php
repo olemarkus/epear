@@ -68,8 +68,10 @@ $phpflags = array();
 $php53flags = array();
 $pearDeps = array();
 
+
 $usedep["dom"] = "xml";
 $usedep["mbstring"] = "unicode";
+
 
 foreach ($pf->getDeps() as $dep) {
     if ($dep["optional"] == "yes") continue;
@@ -103,19 +105,17 @@ $peardep = implode("\n", $pearDeps);
 
 $doins = "";
 
-foreach ($filelist as $filename => $file) {
-
-}
-
-
 $prefix = ($channelUri == "pear.php.net") ? $prefix = "PEAR-" : "";
 
 if (!is_dir("overlay/dev-php/" . $prefix . $pf->getName())) {
     mkdir("overlay/dev-php/" . $prefix . $pf->getName(), 0777, true);
 }
 
+$ename = $prefix . $pf->getName() . "-" . $pf->getVersion();
+$euri = str_replace($ename, "\${P}", $uri);
+
 $ebuildname = "overlay/dev-php/" . $prefix . $pf->getName() . "/" . 
-    $prefix . $pf->getName() . "-" . $pf->getVersion() . ".ebuild";
+    $ename . ".ebuild";
 
 $ebuild = `head -n4 /usr/portage/skel.ebuild`;
 
@@ -126,7 +126,7 @@ $ebuild .= "SLOT=\"0\"\n";
 $ebuild .= "DESCRIPTION=\"" . $pf->getSummary() . "\"\n";
 $ebuild .= "LICENSE=\"" . str_replace(" License", "", $pf->getLicense()) . "\"\n";
 $ebuild .= "HOMEPAGE=\"" . $parsedName['channel'] . "\"\n";
-$ebuild .= "SRC_URI=\"" . $uri . "\"\n";
+$ebuild .= "SRC_URI=\"" . $euri . "\"\n";
 $ebuild .= "DEPEND=\"" . $phpdep . "\n" . $peardep . "\"\n";
 $ebuild .= "RDEPEND=\"\${DEPEND}\"\n";
 $ebuild .= "\n";
