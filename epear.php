@@ -80,7 +80,13 @@ foreach ($pf->getDeps() as $dep) {
     case "pkg": 
         $prefix = "";
         if ($dep["channel"] == "pear.php.net") $prefix = "PEAR-";
-        $pearDeps[] = "dev-php/" . $prefix . $dep["name"];
+        $rel = "";
+        if ($dep["rel"] == "ge") {
+            $rel = ">=";
+        }
+
+        //The key is used to prevent duplicates
+        $pearDeps[$dep["name"]] = $rel . "dev-php/" . $prefix . $dep["name"] . "-" . $dep["version"];
         break;
     case "ext":
         if (isset($usedep[$dep["name"]])) $dep["name"] = $usedep[$dep["name"]];
