@@ -141,17 +141,17 @@ $phpdep = "";
 
 if ($phpflags != $php53flags) {
     $phpdep = "|| ( <dev-lang/php-5.3[" . implode(",", $phpflags) . "] " .
-        ">=dev-lang/php-5.3[" . implode(",", $php53flags) . "] )\n" ;
+        "    >=dev-lang/php-5.3[" . implode(",", $php53flags) . "] )\n    " ;
 } elseif ($phpflags) {
-    $phpdep = "dev-lang/php[" . implode(",", $phpflags). "]\n";
+    $phpdep = "dev-lang/php[" . implode(",", $phpflags). "]\n    ";
 }
 
 $phpdep .= ">=dev-lang/php-$phpver";
 
 
-$peardep = implode("\n", $pearDeps);
+$peardep = implode("\n    ", $pearDeps);
 
-$postdep = implode("\n", $postDeps);
+$postdep = implode("\n    ", $postDeps);
 
 $doins = "";
 
@@ -174,16 +174,20 @@ $ebuildname = "overlay/" . get_package_name($ename)  . "/" .
 $ebuild = `head -n4 /usr/portage/skel.ebuild`;
 
 $ebuild .= "EAPI=\"2\"\n";
+$ebuild .= "\n";
 $ebuild .= "PEAR_PV=\"" . $pf->getVersion() . "\"\n";
 $ebuild .= "PHP_PEAR_PKG_NAME=\"" . $pf->getName() . "\"\n";
+$ebuild .= "\n";
 $ebuild .= "inherit php-pear-r1\n";
+$ebuild .= "\n";
 $ebuild .= "KEYWORDS=\"~amd64\"\n";
 $ebuild .= "SLOT=\"0\"\n";
 $ebuild .= "DESCRIPTION=\"" . $pf->getSummary() . "\"\n";
 $ebuild .= "LICENSE=\"" . str_replace(" License", "", $pf->getLicense()) . "\"\n";
 $ebuild .= "HOMEPAGE=\"" . $parsedName['channel'] . "\"\n";
 $ebuild .= "SRC_URI=\"" . $euri . "\"\n";
-$ebuild .= "DEPEND=\"" . $phpdep . "\n" . $peardep . "\"\n";
+$ebuild .= "\n";
+$ebuild .= "DEPEND=\"" . $phpdep . "\n    " . $peardep . "\"\n";
 $ebuild .= "RDEPEND=\"\${DEPEND}\"\n";
 if ($postdep) {
     $ebuild .= "PDEPEND=\"$postdep\"\n";
