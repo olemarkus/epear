@@ -11,10 +11,18 @@
  */
 
 
-function cleanup_version($version) {
+function cleanup_version($version) 
+{
     return str_replace("beta", "_beta", $version);
 }
 
+function get_channel_prefix($channelUri) 
+{
+    $prefix = "";
+    if ($channelUri == "pear.php.net") $prefix = "PEAR-";
+    if ($channelUri == "components.ez.no") $prefix = "ezc-";
+    return $prefix;
+}
 
 require_once "PEAR/Config.php";
 require_once "PEAR/PackageFile.php";
@@ -94,8 +102,7 @@ foreach ($pf->getDeps() as $dep) {
 
     switch ($dep["type"]) {
     case "pkg": 
-        $prefix = "";
-        if ($dep["channel"] == "pear.php.net") $prefix = "PEAR-";
+        $prefix = get_channel_prefix($dep["channel"]);
         $rel = "";
         if ($dep["rel"] == "ge") {
             $rel = ">=";
@@ -131,7 +138,7 @@ $peardep = implode("\n", $pearDeps);
 
 $doins = "";
 
-$prefix = ($channelUri == "pear.php.net") ? $prefix = "PEAR-" : "";
+$prefix = get_channel_prefix($channelUri); 
 
 if (!is_dir("overlay/dev-php/" . $prefix . $pf->getName())) {
     mkdir("overlay/dev-php/" . $prefix . $pf->getName(), 0777, true);
