@@ -107,7 +107,6 @@ $postDeps = array();
 $usedep["dom"] = "xml";
 $usedep["mbstring"] = "unicode";
 
-
 foreach ($pf->getDeps() as $dep) {
     if ($dep["optional"] == "yes") continue;
 
@@ -175,6 +174,8 @@ $ebuildname = "overlay/" . get_package_name($ename)  . "/" .
 $ebuild = `head -n4 /usr/portage/skel.ebuild`;
 
 $ebuild .= "EAPI=\"2\"\n";
+$ebuild .= "PEAR_PV=\"" . $pf->getVersion() . "\"\n";
+$ebuild .= "PHP_PEAR_PKG_NAME=\"" . $pf->getName() . "\"\n";
 $ebuild .= "inherit php-pear-r1\n";
 $ebuild .= "KEYWORDS=\"~amd64\"\n";
 $ebuild .= "SLOT=\"0\"\n";
