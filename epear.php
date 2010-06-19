@@ -16,6 +16,17 @@ function cleanup_version($version)
     return str_replace("beta", "_beta", $version);
 }
 
+function get_package_name($name, $includeCategory = true) {
+    $category = "dev-php";
+    if (preg_match("/^ezc/", $name)) $category = "dev-php5";
+    if ($name == "PHPUnit") {
+        $name = "phpunit";
+        $category = "dev-php5";
+    }
+
+    return $includeCategory ? $category . "/" . $name : $name;
+}
+
 function get_channel_prefix($channelUri) 
 {
     $prefix = "";
@@ -91,7 +102,7 @@ $rmfiles = array_diff_key($fullfilelist, $filelist);
 $phpflags = array();
 $php53flags = array();
 $pearDeps = array();
-
+$postDeps = array();
 
 $usedep["dom"] = "xml";
 $usedep["mbstring"] = "unicode";
@@ -108,12 +119,17 @@ foreach ($pf->getDeps() as $dep) {
             $rel = ">=";
         }
 
-        //The key is used to prevent duplicates
-        $pearDeps[$dep["name"]] = $rel . "dev-php/" . $prefix . $dep["name"] . "-" . cleanup_version($dep["version"]);
+        //Certain packages tend to create circular deps. We hack them into PDEPEND
+        if ($dep["name"] == "PHPUnit") {
+            $postDeps[$dep["name"]] = $rel . get_package_name($prefix . $dep["name"]) . "-" . cleanup_version($dep["version"]);
+        } else {
+            //The key is used to prevent duplicates
+            $pearDeps[$dep["name"]] = $rel . get_package_name($prefix . $dep["name"]) . "-" . cleanup_version($dep["version"]);
+        }
         break;
     case "ext":
         if (isset($usedep[$dep["name"]])) $dep["name"] = $usedep[$dep["name"]];
-        if (!in_array($dep["name"], array("pcre","spl")))
+        if (!in_array($dep["name"], array("pcre","spl","reflection")))
             $php53flags[] = $dep["name"];
         $phpflags[] = $dep["name"];
         break;
@@ -136,19 +152,25 @@ $phpdep .= ">=dev-lang/php-$phpver";
 
 $peardep = implode("\n", $pearDeps);
 
+$postdep = implode("\n", $postDeps);
+
 $doins = "";
 
 $prefix = get_channel_prefix($channelUri); 
 
-if (!is_dir("overlay/dev-php/" . $prefix . $pf->getName())) {
-    mkdir("overlay/dev-php/" . $prefix . $pf->getName(), 0777, true);
+
+
+$ename = get_channel_prefix($channelUri) . $pf->getName();
+$myp = $pf->getName();
+
+$euri = str_replace($ename, $myp, $uri);
+
+if (!is_dir("overlay/" . get_package_name($ename))) {
+    mkdir("overlay/" . get_package_name($ename), 0777, true);
 }
 
-$ename = $prefix . $pf->getName() . "-" . cleanup_version($pf->getVersion());
-$euri = str_replace($ename, "\${P}", $uri);
-
-$ebuildname = "overlay/dev-php/" . $prefix . $pf->getName() . "/" . 
-    $ename . ".ebuild";
+$ebuildname = "overlay/" . get_package_name($ename)  . "/" . 
+    get_package_name($ename, false) . "-" . cleanup_version($pf->getVersion()) . ".ebuild";
 
 $ebuild = `head -n4 /usr/portage/skel.ebuild`;
 
@@ -162,6 +184,9 @@ $ebuild .= "HOMEPAGE=\"" . $parsedName['channel'] . "\"\n";
 $ebuild .= "SRC_URI=\"" . $euri . "\"\n";
 $ebuild .= "DEPEND=\"" . $phpdep . "\n" . $peardep . "\"\n";
 $ebuild .= "RDEPEND=\"\${DEPEND}\"\n";
+if ($postdep) {
+    $ebuild .= "PDEPEND=\"$postdep\"\n";
+}
 $ebuild .= "\n";
 
 file_put_contents($ebuildname, $ebuild);
