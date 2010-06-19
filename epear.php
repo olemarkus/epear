@@ -10,6 +10,12 @@
  * @copyright 2010 Ole Markus With
  */
 
+
+function cleanup_version($version) {
+    return str_replace("beta", "_beta", $version);
+}
+
+
 require_once "PEAR/Config.php";
 require_once "PEAR/PackageFile.php";
 
@@ -28,16 +34,26 @@ $channelUri = $parsedName["channel"];
 $channel = $config->getRegistry()->getChannel($parsedName['channel']);
 
 $base = $channel->getBaseURL('REST1.3', $parsedName['channel']);
+$restv = "1.3";
+
+if (!$base) {
+    $base = $channel->getBaseURL('REST1.0', $parsedName['channel']);
+    $restv = "1.0";
+}
 
 $options = array();
 
-$rest = $config->getRest('1.3', $options);
+$rest = $config->getRest($restv, $options);
 
 $state = 'alpha';
 
 
 $url = $rest->getDownloadUrl($base, $parsedName, $state, false, $parsedName['channel']);
 
+if (PEAR::isError($url)) {
+    die("Failed to obtain url for $channelUri\n");
+
+}
 
 $uri = $url["url"] . ".tgz";
 
@@ -86,26 +102,30 @@ foreach ($pf->getDeps() as $dep) {
         }
 
         //The key is used to prevent duplicates
-        $pearDeps[$dep["name"]] = $rel . "dev-php/" . $prefix . $dep["name"] . "-" . $dep["version"];
+        $pearDeps[$dep["name"]] = $rel . "dev-php/" . $prefix . $dep["name"] . "-" . cleanup_version($dep["version"]);
         break;
     case "ext":
         if (isset($usedep[$dep["name"]])) $dep["name"] = $usedep[$dep["name"]];
         if (!in_array($dep["name"], array("pcre","spl")))
             $php53flags[] = $dep["name"];
         $phpflags[] = $dep["name"];
+        break;
+    case "php":
+        $phpver = $dep["version"];
     }
 }
 
-
+$phpdep = "";
 
 if ($phpflags != $php53flags) {
     $phpdep = "|| ( <dev-lang/php-5.3[" . implode(",", $phpflags) . "] " .
-        ">=dev-lang/php-5.3[" . implode(",", $php53flags) . "] )" ;
+        ">=dev-lang/php-5.3[" . implode(",", $php53flags) . "] )\n" ;
 } elseif ($phpflags) {
-    $phpdep = "dev-lang/php[" . implode(",", $phpflags). "]";
-} else {
-    $phpdep = "dev-lang/php";
+    $phpdep = "dev-lang/php[" . implode(",", $phpflags). "]\n";
 }
+
+$phpdep .= ">=dev-lang/php-$phpver";
+
 
 $peardep = implode("\n", $pearDeps);
 
@@ -117,7 +137,7 @@ if (!is_dir("overlay/dev-php/" . $prefix . $pf->getName())) {
     mkdir("overlay/dev-php/" . $prefix . $pf->getName(), 0777, true);
 }
 
-$ename = $prefix . $pf->getName() . "-" . $pf->getVersion();
+$ename = $prefix . $pf->getName() . "-" . cleanup_version($pf->getVersion());
 $euri = str_replace($ename, "\${P}", $uri);
 
 $ebuildname = "overlay/dev-php/" . $prefix . $pf->getName() . "/" . 
