@@ -6,8 +6,12 @@
  *
  * PHP Version 5
  *
+ * LICENSE: Distributed under the terms of the GNU General Public License v2
+ * You should have received a copy of this license along with this program.
+ *
  * @author    Ole Markus With <olemarkus@olemarkus.org>
  * @copyright 2010 Ole Markus With
+ * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GPL-2
  */
 
 require_once "PEAR/Config.php";
