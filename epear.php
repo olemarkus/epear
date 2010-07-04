@@ -11,7 +11,7 @@
  *
  * @author    Ole Markus With <olemarkus@olemarkus.org>
  * @copyright 2010 Ole Markus With
- * @license http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GPL-2
+ * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GPL-2
  */
 
 require_once "PEAR/Config.php";
@@ -22,7 +22,8 @@ function cleanup_version($version)
     return str_replace("beta", "_beta", $version);
 }
 
-function get_package_name($name, $includeCategory = true) {
+function get_package_name($name, $includeCategory = true) 
+{
     $category = "dev-php";
     if (preg_match("/^ezc/", $name)) $category = "dev-php5";
     if ($name == "PHPUnit") {
@@ -41,7 +42,8 @@ function get_channel_prefix($channelUri)
     return $prefix;
 }
 
-function generate_ebuild($pear_package) {
+function generate_ebuild($pear_package) 
+{
     echo "Generating ebuild for $pear_package\n";
     $config = PEAR_Config::singleton('', '');
 
@@ -49,8 +51,9 @@ function generate_ebuild($pear_package) {
 
     $channelName =  $config->get('default_channel');
 
-    $parsedName = $config->getRegistry()->parsePackageName($pear_package,
-        $channelName);
+    $parsedName = $config->getRegistry()->parsePackageName(
+        $pear_package, $channelName
+    );
 
     $channelUri = $parsedName["channel"];
 
@@ -71,8 +74,9 @@ function generate_ebuild($pear_package) {
     $state = 'alpha';
 
 
-    $url = $rest->getDownloadUrl($base, $parsedName, $state, false,
-        $parsedName['channel']);
+    $url = $rest->getDownloadUrl(
+        $base, $parsedName, $state, false, $parsedName['channel']
+    );
 
     if (PEAR::isError($url)) {
         die("Failed to obtain url for $channelUri\n");
@@ -136,7 +140,7 @@ function generate_ebuild($pear_package) {
                 //The key is used to prevent duplicates
                 $pearDeps[$dep["name"]] = $pkgname;
                 if (!(shell_exec("portageq match / " . escapeshellarg($pkgname)))) {
-                echo "Dependency $pkgname not found\n";
+                    echo "Dependency $pkgname not found\n";
                     generate_ebuild($dep["channel"] . "/" . $dep["name"]);
                 }
             }
@@ -188,7 +192,7 @@ function generate_ebuild($pear_package) {
 
     $ebuildname = "overlay/" . get_package_name($ename)  . "/" . 
         get_package_name($ename, false) . "-" . cleanup_version($pf->getVersion()) .
-".ebuild";
+           ".ebuild";
 
     $ebuild = `head -n4 /usr/portage/skel.ebuild`;
 
@@ -203,7 +207,7 @@ function generate_ebuild($pear_package) {
     $ebuild .= "SLOT=\"0\"\n";
     $ebuild .= "DESCRIPTION=\"" . $pf->getSummary() . "\"\n";
     $ebuild .= "LICENSE=\"" . str_replace(" License", "", $pf->getLicense()) .
-"\"\n";
+        "\"\n";
     $ebuild .= "HOMEPAGE=\"" . $parsedName['channel'] . "\"\n";
     $ebuild .= "SRC_URI=\"" . $euri . "\"\n";
     $ebuild .= "\n";
