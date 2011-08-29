@@ -128,9 +128,12 @@ function generate_ebuild($pear_package)
             if ($dep["rel"] == "ge") {
                 $rel = ">=";
             }
-            
-            $pkgname = $rel . get_package_name($prefix . $dep["name"]) . "-" .
-                cleanup_version($dep["version"]);
+
+            $pkgname = $rel . get_package_name($prefix . $dep["name"]);
+            $version = cleanup_version($dep["version"])
+            if ($version) {
+                $pkgname .= "-" . $version;
+            }
 
             //Certain packages tend to create circular deps. We hack them into
             //PDEPEND
