@@ -226,4 +226,17 @@ function generate_ebuild($pear_package)
 }
 
 
+if (empty($argv[1])) {
+		die("
+Run `php epear.php <pear package>`.
+
+Examples:
+php epear.php HTTP_Request2
+
+pear channel-discover pear.pdepend.org
+php epear.php pdepend/PHP_Depend
+
+");
+}
+
 generate_ebuild($package = $argv[1]);
