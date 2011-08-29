@@ -128,9 +128,11 @@ function generate_ebuild($pear_package)
             if ($dep["rel"] == "ge") {
                 $rel = ">=";
             }
-            
-            $pkgname = $rel . get_package_name($prefix . $dep["name"]) . "-" .
-                cleanup_version($dep["version"]);
+
+            $pkgname = $rel . get_package_name($prefix . $dep["name"]);
+            if (cleanup_version($dep["version"])) {
+				$pkgname .= "-" . cleanup_version($dep["version"]);
+			}
 
             //Certain packages tend to create circular deps. We hack them into
             //PDEPEND
@@ -225,5 +227,18 @@ function generate_ebuild($pear_package)
     passthru("ebuild $ebuildname manifest");
 }
 
+
+if (empty($argv[1])) {
+		die("
+Run `php epear.php <pear package>`.
+
+Examples:
+php epear.php HTTP_Request2
+
+pear channel-discover pear.pdepend.org
+php epear.php pdepend/PHP_Depend
+
+");
+}
 
 generate_ebuild($package = $argv[1]);
