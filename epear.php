@@ -176,9 +176,9 @@ function generate_ebuild($pear_package)
     $phpdep .= ">=dev-lang/php-$phpver";
 
 
-    $peardep = implode("\n    ", $pearDeps);
+    $peardep = implode("\n\t", $pearDeps);
 
-    $postdep = implode("\n    ", $postDeps);
+    $postdep = implode("\n\t", $postDeps);
 
     $doins = "";
 
@@ -201,27 +201,28 @@ function generate_ebuild($pear_package)
 
     $ebuild = `head -n4 /usr/portage/skel.ebuild`;
 
-    $ebuild .= "EAPI=\"2\"\n";
+    $ebuild .= "EAPI=4\n";
     $ebuild .= "\n";
     $ebuild .= "PEAR_PV=\"" . $pf->getVersion() . "\"\n";
     $ebuild .= "PHP_PEAR_PKG_NAME=\"" . $pf->getName() . "\"\n";
     $ebuild .= "\n";
     $ebuild .= "inherit php-pear-r1\n";
     $ebuild .= "\n";
-    $ebuild .= "KEYWORDS=\"~" . `portageq envvar ARCH` . "\"\n";
-    $ebuild .= "SLOT=\"0\"\n";
     $ebuild .= "DESCRIPTION=\"" . $pf->getSummary() . "\"\n";
-    $ebuild .= "LICENSE=\"" . str_replace(" License", "", $pf->getLicense()) .
-        "\"\n";
     $ebuild .= "HOMEPAGE=\"" . $parsedName['channel'] . "\"\n";
     $ebuild .= "SRC_URI=\"" . $euri . "\"\n";
     $ebuild .= "\n";
-    $ebuild .= "DEPEND=\"" . $phpdep . "\n    " . $peardep . "\"\n";
+    $ebuild .= "LICENSE=\"" . str_replace(" License", "", $pf->getLicense()) .
+        "\"\n";
+    $ebuild .= "SLOT=\"0\"\n";
+    $ebuild .= "KEYWORDS=\"~" . trim(`portageq envvar ARCH`) . "\"\n";
+    $ebuild .= "IUSE=\"\"\n";
+    $ebuild .= "\n";
+    $ebuild .= "DEPEND=\"" . $phpdep . "\n\t" . $peardep . "\"\n";
     $ebuild .= "RDEPEND=\"\${DEPEND}\"\n";
     if ($postdep) {
         $ebuild .= "PDEPEND=\"$postdep\"\n";
     }
-    $ebuild .= "\n";
 
     file_put_contents($ebuildname, $ebuild);
 
