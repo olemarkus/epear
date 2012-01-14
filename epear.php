@@ -130,7 +130,7 @@ function generate_ebuild($pear_package)
             }
 
             $pkgname = $rel . get_package_name($prefix . $dep["name"]);
-            $version = cleanup_version($dep["version"])
+            $version = cleanup_version($dep["version"]);
             if ($version) {
                 $pkgname .= "-" . $version;
             }
