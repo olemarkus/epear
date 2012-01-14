@@ -19,7 +19,9 @@ require_once "PEAR/PackageFile.php";
 
 function cleanup_version($version) 
 {
-    return str_replace("beta", "_beta", $version);
+    $search  = array("a", "b", "RC");
+    $replace = array("_alpha", "_beta", "_rc");
+    return str_replace($search, $replace, $version);
 }
 
 function get_package_name($name, $includeCategory = true) 
