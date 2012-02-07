@@ -26,11 +26,11 @@ function cleanup_version($version)
 
 function get_package_name($name, $includeCategory = true) 
 {
-    $category = "dev-php";
-    if (preg_match("/^ezc/", $name)) $category = "dev-php5";
-    if ($name == "PHPUnit") {
-        $name = "phpunit";
-        $category = "dev-php5";
+    $category = 'dev-php';
+
+    // Only allow uppercase names for official PEAR packages and ezc (for now)
+    if (!strstr($name, 'PEAR') && !strstr($name, 'ezc')) {
+        $name = strtolower($name);
     }
 
     return $includeCategory ? $category . "/" . $name : $name;
