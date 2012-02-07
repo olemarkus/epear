@@ -28,8 +28,7 @@ function get_package_name($name, $includeCategory = true)
 {
     $category = 'dev-php';
 
-    // Only allow uppercase names for official PEAR packages and ezc (for now)
-    if (!strstr($name, 'PEAR') && !strstr($name, 'ezc')) {
+    if ($name == 'PHPUnit') {
         $name = strtolower($name);
     }
 
