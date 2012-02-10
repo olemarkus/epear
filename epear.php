@@ -208,7 +208,7 @@ function generate_ebuild($pear_package)
     $ebuild .= "inherit php-pear-r1\n";
     $ebuild .= "\n";
     $ebuild .= "DESCRIPTION=\"" . $pf->getSummary() . "\"\n";
-    $ebuild .= "HOMEPAGE=\"" . $parsedName['channel'] . "\"\n";
+    $ebuild .= "HOMEPAGE=\"" . (strstr($parsedName['channel'], 'http:') ?: 'http://' . $parsedName['channel']) . "\"\n";
     $ebuild .= "SRC_URI=\"" . $euri . "\"\n";
     $ebuild .= "\n";
     $ebuild .= "LICENSE=\"" . str_replace(" License", "", $pf->getLicense()) .
