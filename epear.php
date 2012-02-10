@@ -200,7 +200,7 @@ function generate_ebuild($pear_package)
 
     $ebuild = `head -n4 /usr/portage/skel.ebuild`;
 
-    $ebuild .= "EAPI=\"4\"\n";
+    $ebuild .= "EAPI=4\n";
     $ebuild .= "\n";
     $ebuild .= "PEAR_PV=\"" . $pf->getVersion() . "\"\n";
     $ebuild .= "PHP_PEAR_PKG_NAME=\"" . $pf->getName() . "\"\n";
