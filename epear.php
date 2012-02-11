@@ -26,11 +26,10 @@ function cleanup_version($version)
 
 function get_package_name($name, $includeCategory = true) 
 {
-    $category = "dev-php";
-    if (preg_match("/^ezc/", $name)) $category = "dev-php5";
-    if ($name == "PHPUnit") {
-        $name = "phpunit";
-        $category = "dev-php5";
+    $category = 'dev-php';
+
+    if ($name == 'PHPUnit') {
+        $name = strtolower($name);
     }
 
     return $includeCategory ? $category . "/" . $name : $name;
@@ -209,7 +208,7 @@ function generate_ebuild($pear_package)
     $ebuild .= "inherit php-pear-r1\n";
     $ebuild .= "\n";
     $ebuild .= "DESCRIPTION=\"" . $pf->getSummary() . "\"\n";
-    $ebuild .= "HOMEPAGE=\"" . $parsedName['channel'] . "\"\n";
+    $ebuild .= "HOMEPAGE=\"" . (strstr($parsedName['channel'], 'http:') ?: 'http://' . $parsedName['channel']) . "\"\n";
     $ebuild .= "SRC_URI=\"" . $euri . "\"\n";
     $ebuild .= "\n";
     $ebuild .= "LICENSE=\"" . str_replace(" License", "", $pf->getLicense()) .
