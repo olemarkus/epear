@@ -40,6 +40,12 @@ function get_channel_prefix($channelUri)
     $prefix = "";
     if ($channelUri == "pear.php.net") $prefix = "PEAR-";
     if ($channelUri == "components.ez.no") $prefix = "ezc-";
+    if ($channelUri == "pear.phpunit.de") $prefix = "phpunit-";
+    if ($channelUri == "pear.symfony-project.com") $prefix = "symfony-";
+
+    if ($prefix == "") {
+        echo "Channels should have prefix. None defined for $channelUri" . "\n";
+    }
     return $prefix;
 }
 
