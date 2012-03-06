@@ -168,13 +168,10 @@ function generate_ebuild($pear_package)
             $phpver = $dep["version"];
         }
     }
+    
 
     $phpdep = "";
-
-    if ($phpflags != $php53flags) {
-        $phpdep = "|| ( <dev-lang/php-5.3[" . implode(",", $phpflags) . "] " .
-            "    >=dev-lang/php-5.3[" . implode(",", $php53flags) . "] )\n    " ;
-    } elseif ($phpflags) {
+    if (!empty($phpflags)) {
         $phpdep = "dev-lang/php[" . implode(",", $phpflags). "]\n    ";
     }
 
