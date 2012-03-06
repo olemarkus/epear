@@ -31,11 +31,6 @@ function cleanup_version($version)
 function get_package_name($name, $includeCategory = true) 
 {
     $category = "dev-php";
-    if (preg_match("/^ezc/", $name)) $category = "dev-php5";
-    if ($name == "PHPUnit") {
-        $name = "phpunit";
-        $category = "dev-php5";
-    }
 
     return $includeCategory ? $category . "/" . $name : $name;
 }
