@@ -14,6 +14,10 @@
  * @license   http://www.gnu.org/licenses/old-licenses/gpl-2.0.html GPL-2
  */
 
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
+
+
+
 require_once "PEAR/Config.php";
 require_once "PEAR/PackageFile.php";
 
